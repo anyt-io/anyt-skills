@@ -1,6 +1,6 @@
 ---
 name: youtube-downloader
-description: Download YouTube videos and transcripts. Use when the user wants to download a YouTube video, extract audio from a YouTube video, or get the transcript/subtitles of a YouTube video in text, JSON, or SRT format.
+description: Download YouTube videos, transcripts, cover images, and screenshots. Use when the user wants to download a YouTube video, extract audio, get transcripts/subtitles, download cover/thumbnail images, or capture screenshot frames at specific timestamps without downloading the full video.
 ---
 
 # YouTube Downloader
@@ -53,8 +53,25 @@ uv run --project runtime runtime/download_transcript.py "URL" [options]
 
 If the requested language is unavailable, available languages are listed in the error output.
 
+## Capture Screenshots
+
+Capture frame images at specific timestamps without downloading the full video. Uses the stream URL directly.
+
+```bash
+uv run --project runtime runtime/screenshot_video.py "URL" -t "TIMESTAMPS" [options]
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-t, --timestamps` | Comma-separated times: seconds, M:SS, or H:MM:SS (e.g., `30,1:15,2:00`) | **required** |
+| `-o, --output` | Output directory | `output/` |
+| `-p, --prefix` | Filename prefix for screenshots | `frame` |
+| `-q, --quality` | JPEG quality (1=best, 31=worst) | `2` |
+
+Output files are named `<prefix>_001.jpg`, `<prefix>_002.jpg`, etc. A `manifest.json` is also written with metadata for each captured frame.
+
 ## Limitations
 
 - Single video only (playlists disabled)
 - Transcripts require captions to be available on the video
-- Video download requires `ffmpeg` for format merging; transcript download does not
+- Video download and screenshots require `ffmpeg`; transcript download does not
