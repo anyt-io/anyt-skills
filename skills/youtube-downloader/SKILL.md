@@ -1,42 +1,47 @@
-# YouTube Video Downloader Skill
+---
+name: youtube-downloader
+description: Download YouTube videos and transcripts. Use when the user wants to download a YouTube video, extract audio from a YouTube video, or get the transcript/subtitles of a YouTube video in text, JSON, or SRT format.
+---
 
-Downloads YouTube videos with customizable quality and format options using `yt-dlp`.
-
-The `runtime/` folder under this skill contains the uv project with pinned dependencies.
+# YouTube Downloader
 
 ## Prerequisites
 
-- `uv` ([install](https://docs.astral.sh/uv/getting-started/installation/))
-- `ffmpeg` (`brew install ffmpeg`)
+Ensure `uv` and `ffmpeg` are installed before running any scripts. If missing, install with:
+- `uv`: https://docs.astral.sh/uv/getting-started/installation/
+- `ffmpeg`: `brew install ffmpeg`
 
-## Usage
+## Download Video
 
 Run from the skill folder (`skills/youtube-downloader/`):
 
 ```bash
-# Download a video (best quality, mp4)
-uv run --project runtime runtime/download_video.py "URL"
-
-# Specific quality
-uv run --project runtime runtime/download_video.py "URL" -q 720p
-
-# Audio only (MP3)
-uv run --project runtime runtime/download_video.py "URL" -a
-
-# Custom output and format
-uv run --project runtime runtime/download_video.py "URL" -o ~/Videos -f mkv -q 1080p
+uv run --project runtime runtime/download_video.py "URL" [options]
 ```
-
-## Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-o, --output` | Output directory | `skills/youtube-downloader/output/` |
+| `-o, --output` | Output directory | `output/` |
 | `-q, --quality` | best, 1080p, 720p, 480p, 360p, worst | `best` |
 | `-f, --format` | mp4, webm, mkv | `mp4` |
 | `-a, --audio-only` | Extract audio as MP3 | `false` |
 
+## Download Transcript
+
+```bash
+uv run --project runtime runtime/download_transcript.py "URL" [options]
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-o, --output` | Output directory | `output/` |
+| `-f, --format` | text, json, srt | `text` |
+| `-l, --lang` | Language code | `en` |
+
+If the requested language is unavailable, available languages are listed in the error output.
+
 ## Limitations
 
-- Single video downloads only (playlists disabled by default)
-- Higher quality requires more storage and download time
+- Single video only (playlists disabled)
+- Transcripts require captions to be available on the video
+- Video download requires `ffmpeg` for format merging; transcript download does not

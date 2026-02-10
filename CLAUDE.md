@@ -22,7 +22,9 @@ skills/
 - **TypeScript skills**: Use `bun` for project management and script execution. Never use `npm` directly.
 - **Execution**: Always use `uv run --project runtime runtime/<script>.py` or `bun run runtime/<script>.ts` from the skill folder.
 - **Output**: Skills that produce files should default to `output/` inside the skill folder (auto-created, gitignored).
-- **SKILL.md**: Usage documentation only — no development instructions.
+- **SKILL.md**: Must have YAML frontmatter with `name` and `description`. Body contains usage instructions only — no development docs. Follow [Anthropic skill guidelines](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md).
+- **Testing**: Python skills include pytest tests in `runtime/tests/`. Run with `uv run pytest tests/ -v`.
+- **.pspmignore**: Each skill has a `.pspmignore` to exclude dev files from PSPM publishing.
 
 ## Development
 
@@ -32,6 +34,7 @@ skills/
 uv run ruff check .          # Lint
 uv run ruff format .         # Format
 uv run python -m pyright .   # Typecheck
+uv run pytest tests/ -v      # Test
 ```
 
 ### Python tool config

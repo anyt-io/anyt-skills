@@ -4,12 +4,14 @@ version = "0.1.0"
 description = "YouTube video downloader skill using yt-dlp"
 requires-python = ">=3.10"
 dependencies = [
+    "youtube-transcript-api>=1.2.4",
     "yt-dlp>=2024.0.0",
 ]
 
 [dependency-groups]
 dev = [
     "pyright>=1.1.408",
+    "pytest>=9.0.2",
     "ruff>=0.15.0",
 ]
 
@@ -28,6 +30,10 @@ select = [
     "SIM", # flake8-simplify
     "RUF", # ruff-specific rules
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
 
 [tool.pyright]
 pythonVersion = "3.10"

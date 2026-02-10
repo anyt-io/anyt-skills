@@ -84,11 +84,28 @@ bun run runtime/<script>.ts [args]
 
 ## SKILL.md Conventions
 
-SKILL.md should only document **how to use** the skill, not how to develop it:
+Following the [Anthropic skill-creator guidelines](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md):
 
-- Brief description of what the skill does
+### YAML Frontmatter (required)
+
+Every SKILL.md must start with YAML frontmatter containing `name` and `description`:
+
+```yaml
+---
+name: skill-name
+description: What this skill does. Use when the user wants to [specific triggers]. Supports [key capabilities].
+---
+```
+
+- `name`: Skill identifier (matches folder name)
+- `description`: Primary triggering mechanism — Claude uses this to decide when to load the skill. Include what the skill does and specific use contexts.
+
+### Body
+
+Write instructions for Claude on how to use the skill and its bundled scripts. Use imperative form. Keep it concise — only include what Claude cannot infer.
+
 - Prerequisites (external tools needed)
-- Usage examples with `uv run --project runtime` or `bun run runtime/`
+- Usage commands with `uv run --project runtime` or `bun run runtime/`
 - Options/flags reference
 - Limitations
 
@@ -126,13 +143,48 @@ bun.lockb
 
 Skill-specific ignores go in `skills/<skill-name>/.gitignore`.
 
+## Testing
+
+Python skills should include tests in `runtime/tests/` using pytest:
+
+```bash
+cd skills/<skill-name>/runtime
+uv add --dev pytest
+uv run pytest tests/ -v
+```
+
+Add pytest config to `pyproject.toml`:
+```toml
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+```
+
+## .pspmignore
+
+Each skill should have a `.pspmignore` at its root to exclude dev files from PSPM publishing (while keeping them in git):
+
+```
+runtime/.venv/
+runtime/.ruff_cache/
+runtime/__pycache__/
+runtime/.pytest_cache/
+runtime/tests/
+runtime/.python-version
+runtime/uv.lock
+output/
+```
+
 ## Adding a New Skill
 
 1. Create the folder: `mkdir -p skills/<skill-name>/runtime`
-2. Add `SKILL.md` at the skill root
+2. Add `SKILL.md` with YAML frontmatter (`name`, `description`) at the skill root
 3. Add `pspm.json` at the skill root
-4. Initialize the runtime:
+4. Add `.pspmignore` at the skill root
+5. Initialize the runtime:
    - Python: `cd skills/<skill-name>/runtime && uv init --name <skill-name>`
    - TypeScript: `cd skills/<skill-name>/runtime && bun init`
-5. Add dependencies and write scripts in `runtime/`
-6. Test execution from the skill folder using `--project` flag
+6. Add dependencies and write scripts in `runtime/`
+7. Add `runtime/.gitignore` for dev artifacts
+8. Add tests in `runtime/tests/`
+9. Test execution from the skill folder using `--project` flag

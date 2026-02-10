@@ -15,7 +15,7 @@ SKILL_DIR = Path(__file__).resolve().parent.parent
 DEFAULT_OUTPUT_DIR = SKILL_DIR / "output"
 
 
-def get_video_info(url):
+def get_video_info(url: str) -> dict:
     """Get information about the video without downloading."""
     result = subprocess.run(
         ["yt-dlp", "--dump-json", "--no-playlist", url],
@@ -27,12 +27,12 @@ def get_video_info(url):
 
 
 def download_video(
-    url,
-    output_path=DEFAULT_OUTPUT_DIR,
-    quality="best",
-    format_type="mp4",
-    audio_only=False,
-):
+    url: str,
+    output_path: str | Path = DEFAULT_OUTPUT_DIR,
+    quality: str = "best",
+    format_type: str = "mp4",
+    audio_only: bool = False,
+) -> bool:
     """
     Download a YouTube video.
 
