@@ -2,76 +2,27 @@
 schema: "2.0"
 name: youtube-video-summarizer-fast
 workdir: anyt_workspace
-inputs:
-  youtubeUrl: ""
-  language: en
 ---
 
 # youtube-video-summarizer-fast
 
-<note id="overview">
+<note id="overview" label="Overview">
 ## YouTube Video Summarizer (Fast)
 
 This notebook creates a structured, section-by-section summary of a YouTube video with corresponding frame captures — **without downloading the full video**. Screenshots are captured directly from the stream URL using ffmpeg, making this pipeline significantly faster and lighter on disk.
 
 ### Pipeline
-1. **Configure** — Provide YouTube URL and preferences
-2. **Setup** — Install youtube-downloader skill via pspm
-3. **Download Transcript & Cover** — Fetch transcript and cover image (no video download)
-4. **Analyze** — Identify natural sections and timestamps
-5. **Review** — Verify section breakdown before summarizing
-6. **Capture** — Screenshot frames directly from stream (no video download)
-7. **Summarize** — Generate per-section summaries
-8. **Review** — Check summaries and images
-9. **Compile** — Create final markdown document
+1. **Setup** — Install youtube-downloader skill via pspm
+2. **Download Transcript & Cover** — Fetch transcript and cover image (no video download)
+3. **Analyze** — Identify natural sections and timestamps
+4. **Review** — Verify section breakdown before summarizing
+5. **Capture** — Screenshot frames directly from stream (no video download)
+6. **Summarize** — Generate per-section summaries
+7. **Review** — Check summaries and images
+8. **Compile** — Create final markdown document
 </note>
 
-<input id="video-config">
-## Video Configuration
-
-Provide the YouTube video URL and configure summary options.
-
-<form type="json">
-{
-  "fields": [
-    {
-      "name": "youtubeUrl",
-      "type": "text",
-      "label": "YouTube URL",
-      "required": true,
-      "placeholder": "https://www.youtube.com/watch?v=..."
-    },
-    {
-      "name": "language",
-      "type": "text",
-      "label": "Transcript Language",
-      "default": "en",
-      "description": "Language code for transcript (e.g., en, zh, ja, ko)"
-    },
-    {
-      "name": "summaryStyle",
-      "type": "select",
-      "label": "Summary Style",
-      "default": "detailed",
-      "options": [
-        { "value": "detailed", "label": "Detailed" },
-        { "value": "concise", "label": "Concise" },
-        { "value": "bullet-points", "label": "Bullet Points" }
-      ]
-    },
-    {
-      "name": "includeTimestamps",
-      "type": "checkbox",
-      "label": "Include Timestamps",
-      "default": true,
-      "description": "Include timestamp references in the summary"
-    }
-  ]
-}
-</form>
-</input>
-
-<shell id="install-skill">
+<shell id="install-skill" label="Install Skills">
 #!/bin/bash
 echo "=== Installing youtube-downloader skill ==="
 npx @anytio/pspm@latest add @user/anyt/youtube-downloader -y
@@ -81,28 +32,20 @@ echo "=== Verify Installed Skills ==="
 ls -la .skills/youtube-downloader/ 2>/dev/null || true
 </shell>
 
-<task id="download-transcript-and-cover">
+<task id="download-transcript-and-cover" label="Download Transcript & Cover">
 ## Download Transcript and Cover Image
 
 Download the transcript and cover image for the video — no video download needed.
 
 ### Requirements
-1. Read `youtubeUrl` and `language` from the `video-config` input
-2. Use the youtube-downloader skill to download the transcript in both JSON and text formats:
-   ```bash
-   uv run --project .skills/youtube-downloader/runtime .skills/youtube-downloader/runtime/download_transcript.py "<youtubeUrl>" -f json -l <language> -o transcripts/
-   uv run --project .skills/youtube-downloader/runtime .skills/youtube-downloader/runtime/download_transcript.py "<youtubeUrl>" -f text -l <language> -o transcripts/
-   ```
-3. Download the cover/thumbnail image:
-   ```bash
-   uv run --project .skills/youtube-downloader/runtime .skills/youtube-downloader/runtime/download_cover.py "<youtubeUrl>" -o cover/
-   ```
-4. Verify the transcript files were created in `transcripts/` and cover image in `cover/`
+1. Download the transcript in both JSON and text formats to `transcripts/` folder using the youtube-downloader skill
+2. Download the cover/thumbnail image to `cover/` folder using the youtube-downloader skill
+3. Verify the transcript files were created in `transcripts/` and cover image in `cover/`
 
 **Output:** transcripts/<video-id>.json, transcripts/<video-id>.txt, cover/<video-id>.jpg
 </task>
 
-<task id="analyze-sections">
+<task id="analyze-sections" label="Analyze Sections">
 ## Analyze Transcript and Identify Sections
 
 Read the transcript JSON file from `transcripts/` and identify natural topic sections in the video.
@@ -143,7 +86,7 @@ Read the transcript JSON file from `transcripts/` and identify natural topic sec
 **Output:** sections.json
 </task>
 
-<break id="review-sections">
+<break id="review-sections" label="Review Sections">
 ## Review Section Breakdown
 
 Check `sections.json` to verify the identified sections make sense.
@@ -157,61 +100,30 @@ Check `sections.json` to verify the identified sections make sense.
 Edit the previous task and re-run if adjustments are needed.
 </break>
 
-<task id="capture-screenshots">
+<task id="capture-screenshots" label="Capture Screenshots">
 ## Capture Frame Screenshots (No Video Download)
 
-Extract representative frame images directly from the video stream at timestamps identified in `sections.json` — without downloading the full video.
+Capture representative frame images directly from the YouTube video stream at timestamps identified in `sections.json` — without downloading the full video.
 
 ### Requirements
 1. Read `sections.json` for the `frameTimestamp` of each section
-2. Read `youtubeUrl` from the `video-config` input
-3. Build a comma-separated timestamp list from all section `frameTimestamp` values
-4. Use the youtube-downloader skill's screenshot tool to capture all frames in one call:
-   ```bash
-   uv run --project .skills/youtube-downloader/runtime .skills/youtube-downloader/runtime/screenshot_video.py "<youtubeUrl>" -t "<comma-separated-timestamps>" -o frames/ -p section
-   ```
-   For example, if sections.json has frameTimestamps [20, 90, 180], run:
-   ```bash
-   uv run --project .skills/youtube-downloader/runtime .skills/youtube-downloader/runtime/screenshot_video.py "<youtubeUrl>" -t "20,90,180" -o frames/ -p section
-   ```
-5. Verify the `frames/manifest.json` was created and check that screenshots were captured successfully
-6. Update `frames/manifest.json` to include section metadata by merging with `sections.json`:
+2. Use the youtube-downloader skill to capture screenshots at all section timestamps, saving to `frames/` folder
+3. Verify the screenshots were captured successfully
+4. Update `frames/manifest.json` to include section metadata by merging with `sections.json`:
    - Add `sectionId` and `sectionTitle` to each frame entry
-
-### Output Format (`frames/manifest.json`)
-```json
-{
-  "video_url": "...",
-  "video_title": "...",
-  "frames": [
-    {
-      "timestamp": 20,
-      "formatted_time": "0:20",
-      "file": "section_001.jpg",
-      "path": "frames/section_001.jpg",
-      "success": true,
-      "sectionId": 1,
-      "sectionTitle": "Introduction"
-    }
-  ]
-}
-```
 
 **Output:** frames/manifest.json, frames/section_001.jpg
 </task>
 
-<task id="summarize-sections">
+<task id="summarize-sections" label="Summarize Sections">
 ## Generate Section Summaries
 
 Read `sections.json` and the transcript to create detailed summaries for each section.
 
 ### Requirements
 1. Read `sections.json` for section boundaries and the transcript JSON from `transcripts/`
-2. Read the `video-config` input to determine the user's preferred summary style:
-   - **Detailed**: 3-5 paragraph summary with key quotes from the transcript
-   - **Concise**: 1-2 paragraph summary
-   - **Bullet Points**: 5-10 key bullet points
-3. If `includeTimestamps` is enabled, include `[MM:SS]` timestamp references inline
+2. For each section, create a detailed 3-5 paragraph summary with key quotes from the transcript
+3. Include `[MM:SS]` timestamp references inline
 4. For each section, also extract 2-3 key takeaways
 5. Save individual section summaries to `summaries/section_XX.md` (numbered 01, 02, etc.)
 6. Save a combined summaries file to `summaries/all_summaries.json`
@@ -236,7 +148,7 @@ Read `sections.json` and the transcript to create detailed summaries for each se
 **Output:** summaries/all_summaries.json, summaries/section_01.md
 </task>
 
-<break id="review-content">
+<break id="review-content" label="Review Content">
 ## Review Summaries and Frame Captures
 
 Review the generated content before compiling the final markdown document.
@@ -254,15 +166,14 @@ Review the generated content before compiling the final markdown document.
 Re-run `capture-screenshots` with adjusted timestamps if frames need improvement.
 </break>
 
-<task id="compile-markdown">
+<task id="compile-markdown" label="Compile Markdown">
 ## Compile Final Markdown Document
 
 Create a polished markdown document combining section summaries and frame images.
 
 ### Requirements
 1. Read `sections.json`, `summaries/all_summaries.json`, and `frames/manifest.json`
-2. Read the `video-config` input for the video URL and preferences
-3. Create a comprehensive markdown document `summary.md` with:
+2. Create a comprehensive markdown document `summary.md` with:
 
    **Header:**
    - Cover image: `![Video Cover](cover/<video-id>.jpg)` (from `cover/` folder)
@@ -286,13 +197,13 @@ Create a polished markdown document combining section summaries and frame images
    **Key Takeaways:**
    - Combined top highlights from all sections
 
-4. Ensure all image paths are relative to the workdir
-5. Format timestamps as `M:SS` or `H:MM:SS` depending on video length
+3. Ensure all image paths are relative to the workdir
+4. Format timestamps as `M:SS` or `H:MM:SS` depending on video length
 
 **Output:** summary.md
 </task>
 
-<note id="complete">
+<note id="complete" label="Complete">
 ## Summary Complete
 
 ### Generated Files
