@@ -249,4 +249,4 @@ AnyT Notebook doesn't implement its own AI. It orchestrates existing AI agents (
 8. Remove unnecessary breakpoints
 9. Share the notebook with your team
 
-For the file format reference, see [spec-v2.0.md](spec-v2.0.md).
+For the file format reference, see [anyt-notebook-spec.md](anyt-notebook-spec.md).
