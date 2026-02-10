@@ -187,8 +187,7 @@ def validate_name(name: str) -> tuple[bool, str]:
         return False, "Skill name must be 64 characters or fewer"
     if not re.match(r"^[a-z0-9]+(-[a-z0-9]+)*$", name):
         return False, (
-            "Skill name must be kebab-case (lowercase letters, digits, single hyphens,"
-            " no leading/trailing hyphens)"
+            "Skill name must be kebab-case (lowercase letters, digits, single hyphens, no leading/trailing hyphens)"
         )
     return True, ""
 

@@ -26,6 +26,19 @@ uv run --project runtime runtime/download_video.py "URL" [options]
 | `-f, --format` | mp4, webm, mkv | `mp4` |
 | `-a, --audio-only` | Extract audio as MP3 | `false` |
 
+## Download Cover Image
+
+```bash
+uv run --project runtime runtime/download_cover.py "URL" [options]
+```
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-o, --output` | Output directory | `output/` |
+| `-n, --name` | Custom filename (without extension) | video ID |
+
+Downloads the highest-resolution thumbnail/cover image available for the video. The file extension (`.jpg`, `.png`, `.webp`) is detected automatically from the thumbnail URL.
+
 ## Download Transcript
 
 ```bash

@@ -27,9 +27,7 @@ def validate_all_skills(skills_dir: Path) -> bool:
         print(f"Error: Not a directory: {skills_dir}")
         return False
 
-    skill_dirs = sorted(
-        d for d in skills_dir.iterdir() if d.is_dir() and (d / "SKILL.md").exists()
-    )
+    skill_dirs = sorted(d for d in skills_dir.iterdir() if d.is_dir() and (d / "SKILL.md").exists())
 
     if not skill_dirs:
         print(f"No skills found in {skills_dir}")

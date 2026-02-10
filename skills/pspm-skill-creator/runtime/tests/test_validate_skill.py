@@ -74,9 +74,7 @@ class TestValidateSkill:
 
     def test_compatibility_too_long(self, tmp_path: Path):
         long_compat = "a" * 501
-        _create_skill_md(
-            tmp_path, f"name: test-skill\ndescription: A test skill\ncompatibility: {long_compat}\n"
-        )
+        _create_skill_md(tmp_path, f"name: test-skill\ndescription: A test skill\ncompatibility: {long_compat}\n")
         valid, _ = validate_skill(tmp_path)
         assert valid is False
 
