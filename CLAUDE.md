@@ -1,41 +1,54 @@
 # CLAUDE.md
 
-This is a repository of common PSPM (Prompt Skill Package Manager) skills. PSPM is a package manager for prompt skills used by AI coding agents (Claude Code, Cursor, Windsurf, Gemini CLI, etc.). See the [PSPM CLI](https://github.com/nicepkg/pspm) for more information.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+This is a repository of PSPM (Prompt Skill Package Manager) skills — reusable prompt skill packages for AI coding agents. See the [PSPM CLI](https://github.com/anyt-io/pspm-cli) for more information.
 
 ## Repository Structure
 
 ```
 skills/
 └── <skill-name>/
-    ├── SKILL.md          # Usage documentation
+    ├── SKILL.md          # Usage documentation (loaded by AI agents)
     ├── pspm.json         # PSPM manifest
+    ├── .pspmignore       # Excludes dev files from PSPM publishing
     └── runtime/          # Isolated execution environment (uv or bun project)
 ```
 
-- Each skill is self-contained under `skills/<skill-name>/`
-- Standalone skill files (SKILL.md, pspm.json) live at the skill root
-- All code and dependencies live in `runtime/` — each skill has its own isolated environment
+Each skill is self-contained. Standalone files (SKILL.md, pspm.json) live at the skill root. All code and dependencies live in `runtime/` — each skill has its own isolated environment.
 
-## Conventions
+## Commands
 
-- **Python skills**: Use `uv` for project management, dependency resolution, and script execution. Never use `pip` directly.
-- **TypeScript skills**: Use `bun` for project management and script execution. Never use `npm` directly.
-- **Execution**: Always use `uv run --project runtime runtime/<script>.py` or `bun run runtime/<script>.ts` from the skill folder.
-- **Output**: Skills that produce files should default to `output/` inside the skill folder (auto-created, gitignored).
-- **SKILL.md**: Must have YAML frontmatter with `name` and `description`. Body contains usage instructions only — no development docs. Follow [Anthropic skill guidelines](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md).
-- **Testing**: Python skills include pytest tests in `runtime/tests/`. Run with `uv run pytest tests/ -v`.
-- **.pspmignore**: Each skill has a `.pspmignore` to exclude dev files from PSPM publishing.
+### Running a skill (from `skills/<skill-name>/`)
 
-## Development
+```bash
+uv run --project runtime runtime/<script>.py [args]     # Python
+bun run runtime/<script>.ts [args]                       # TypeScript
+```
 
-### Python skill checks (from `skills/<skill-name>/runtime/`)
+### Dev checks (from `skills/<skill-name>/runtime/`)
 
 ```bash
 uv run ruff check .          # Lint
 uv run ruff format .         # Format
-uv run python -m pyright .   # Typecheck
+uv run python -m pyright .   # Type check
 uv run pytest tests/ -v      # Test
 ```
+
+### Validate skills (from `skills/pspm-skill-creator/`)
+
+```bash
+uv run --project runtime runtime/validate_skill.py ../<skill-name>    # Single skill
+uv run --project runtime runtime/validate_all_skills.py ../           # All skills
+```
+
+## Conventions
+
+- **Python skills**: Use `uv` for everything. Never use `pip` directly.
+- **TypeScript skills**: Use `bun` for everything. Never use `npm` directly.
+- **SKILL.md**: Must have YAML frontmatter with `name` and `description`. Body contains usage instructions only — no development docs. Follow [Anthropic skill guidelines](https://github.com/anthropics/skills/blob/main/skills/skill-creator/SKILL.md).
+- **Output**: Skills that produce files should default to `output/` inside the skill folder (auto-created, gitignored).
+- **Testing**: Python skills include pytest tests in `runtime/tests/`.
 
 ### Python tool config
 
@@ -55,6 +68,13 @@ include = ["."]
 typeCheckingMode = "standard"
 ```
 
-## Skill guide
+## CI
+
+GitHub Actions (`.github/workflows/validate-skills.yml`) runs on pushes/PRs to `main` that touch `skills/`:
+1. Validates all skills via `validate_all_skills.py`
+2. Auto-discovers Python skills with `runtime/pyproject.toml`
+3. Runs lint (ruff), type check (pyright), and tests (pytest) for each discovered skill
+
+## Skill Guide
 
 See [docs/skill-development-guide.md](docs/skill-development-guide.md) for the full skill development conventions.
