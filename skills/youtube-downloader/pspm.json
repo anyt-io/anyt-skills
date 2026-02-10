@@ -1,13 +1,14 @@
 {
   "$schema": "https://pspm.dev/schema/v1/pspm.json",
   "name": "youtube-downloader",
-  "version": "0.1.0",
-  "description": "Download youtube video",
+  "version": "0.1.1",
+  "description": "Download youtube video and transcript",
   "author": "Bin Sheng <supercarl87@gmail.com>",
   "license": "Apache-2.0",
   "type": "skill",
   "capabilities": [
-    "Download video"
+    "Download video",
+    "Download transcript"
   ],
   "main": "SKILL.md",
   "requirements": {
