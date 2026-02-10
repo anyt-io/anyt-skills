@@ -82,7 +82,13 @@ ls -la .skills/youtube-downloader/ 2>/dev/null || true
 </shell>
 
 <task id="Download-Info">
-Download video and transcript about user's video and store it in transcripts/ folder
+Download video, transcript, and cover image for the user's video:
+
+1. **Transcript** — Download in both JSON and text formats to `transcripts/` folder
+2. **Video** — Download at 720p to `video/` folder
+3. **Cover image** — Download the video's thumbnail/cover image to `cover/` folder using `download_cover.py`
+
+Use the youtube-downloader skill scripts from `.skills/youtube-downloader/`.
 </task>
 
 <task id="analyze-sections">
@@ -237,6 +243,7 @@ Create a polished markdown document combining section summaries and frame images
 3. Create a comprehensive markdown document `summary.md` with:
 
    **Header:**
+   - Cover image: `![Video Cover](cover/<video-id>.jpg)` (from `cover/` folder)
    - Video title (from `sections.json`)
    - Original video URL (linked)
    - Total duration formatted as `HH:MM:SS`
@@ -274,6 +281,8 @@ anyt_workspace/
 │   └── <video-id>.txt          # Plain text transcript
 ├── video/
 │   └── <video-title>.mp4       # Downloaded video (720p)
+├── cover/
+│   └── <video-id>.jpg          # Video cover/thumbnail image
 ├── sections.json               # Section breakdown with timestamps
 ├── summaries/
 │   ├── all_summaries.json      # Combined section summaries

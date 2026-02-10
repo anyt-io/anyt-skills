@@ -31,9 +31,7 @@ class TestPackageSkill:
         """Create a minimal valid skill directory."""
         skill_path = path / "test-skill"
         skill_path.mkdir()
-        (skill_path / "SKILL.md").write_text(
-            "---\nname: test-skill\ndescription: A test skill\n---\n\n# Test\n"
-        )
+        (skill_path / "SKILL.md").write_text("---\nname: test-skill\ndescription: A test skill\n---\n\n# Test\n")
         (skill_path / "pspm.json").write_text('{"name": "test-skill"}')
         runtime = skill_path / "runtime"
         runtime.mkdir()
