@@ -3,15 +3,11 @@ schema: "2.0"
 name: product-video
 version: 2.0.0
 workdir: anyt_workspace
-inputs:
-  productName: AnyT Notebook
-  productUrl: https://github.com/anyt-io/anyt-notebook
-  language: en-US
 ---
 
 # product-video
 
-<note id="overview">
+<note id="overview" label="Overview">
 ## Product Video Pipeline
 
 This notebook generates a professional product demo video using **Remotion** (programmatic video framework).
@@ -26,7 +22,7 @@ This notebook generates a professional product demo video using **Remotion** (pr
 User interaction is minimal — just confirm product info, then review before render.
 </note>
 
-<note id="skill-setup">
+<note id="skill-setup" label="Add Skills">
 ## Remotion Skill Setup
 
 This pipeline uses the **remotion-best-practices** skill to give the AI agent domain knowledge about Remotion's APIs, animation patterns, and best practices.
